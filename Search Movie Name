@@ -1,0 +1,44 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+# Initialize Selenium WebDriver
+driver = webdriver.Chrome()
+
+# Open the application
+driver.get("https://movie-reviews-psi.vercel.app/")
+
+# Function to search for a movie name
+def search_movie(movie_name):
+    # Find the search input field and enter the movie name
+    search_input = driver.find_element_by_id("search")
+    search_input.clear()
+    search_input.send_keys(movie_name)
+    
+    # Click on the search button
+    search_button = driver.find_element_by_id("search-button")
+    search_button.click()
+
+# UI Testing for Searching a Movie Name
+try:
+    # Search for a specific movie
+    search_movie("The Shawshank Redemption")
+    
+    # Wait for the search results to be displayed
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "search-results"))
+    )
+    
+    # Check if the search results contain the expected movie
+    search_results = driver.find_elements_by_class_name("search-result")
+    found = False
+    for result in search_results:
+        if "The Shawshank Redemption" in result.text:
+            found = True
+            break
+    assert found, "The searched movie was not found in the search results"
+    
+finally:
+    # Close the browser
+    driver.quit()
